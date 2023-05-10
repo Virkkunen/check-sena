@@ -12,8 +12,7 @@ const argv = yargs(hideBin(process.argv))
     demandOption: false,
     type: 'string',
     coerce: (numbers: string) => {
-      const numberList = numbers.split(',')
-        .map((num) => parseInt(num.trim()));
+      const numberList = numbers.split(',').map((num) => parseInt(num.trim()));
 
       const isValidRange = (num: number) => num >= 1 && num <= 60; // must return true
       const hasDuplicates = (arr: number[]) => new Set(arr).size !== arr.length; // must return false
@@ -30,8 +29,7 @@ const argv = yargs(hideBin(process.argv))
     },
   })
   .help('help')
-  .alias('help', 'h')
-  .argv;
+  .alias('help', 'h').argv;
 
 const scrapeUrl = async (url: string) => {
   const { numbers } = argv;
@@ -41,12 +39,23 @@ const scrapeUrl = async (url: string) => {
     const browser = await puppeteer.launch({ headless: 'new' });
     const page = await browser.newPage();
     await page.goto(url);
-    await page.waitForSelector('#ulDezenas li');
+    await page.waitForSelector('#ulDezenas li'); // this element needs to load 
 
+    // get sena numbers
     const senaNumbers = await page.evaluate(() => {
       const liElements = document.querySelectorAll('#ulDezenas li');
       const liNumbers = Array.from(liElements).map((li) => li.textContent?.trim());
       return liNumbers;
+    });
+
+    // get contest number
+    // there must be an easier and simpler way
+    const contest = await page.evaluate(() => {
+      const h2Elements = Array.from(document.querySelectorAll('h2'));
+      const resultadoEl = h2Elements.find((el) => el.innerText.includes('Resultado'));
+      const spanEl = resultadoEl!.querySelector('span.ng-binding');
+      const text = spanEl!.textContent;
+      return text;
     });
 
     if (!numbers) {
@@ -60,7 +69,7 @@ const scrapeUrl = async (url: string) => {
 
     console.log(`
     Seus números: ${zerodNumbers.join(' ')}
-    Mega Sena XXXX: ${senaNumbers.join(' ')}
+    Mega Sena ${contest}: ${senaNumbers.join(' ')}
     `);
 
     await browser.close();

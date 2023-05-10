@@ -1,6 +1,6 @@
 {
   "name": "check-sena",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A package that checks the lottery numbers against the parameter ones",
   "main": "checkSena.ts",
   "bin": {
