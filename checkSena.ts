@@ -64,13 +64,19 @@ const scrapeUrl = async (url: string) => {
       return;
     }
 
+    const matchingNumbers = numbers.filter((num: number) => senaNumbers.includes(num));
+
     // for display purposes
     const zerodNumbers = numbers.map((num: number) => num.toString().padStart(2, '0'));
     const zerodSenaNumbers = senaNumbers.map((num: number) => num.toString().padStart(2, '0'));
+    const zerodMatchingNumbers = matchingNumbers.map((num: number) => num.toString().padStart(2, '0'));
 
     console.log(`
     Seus números: ${zerodNumbers.join(' ')}
     Mega Sena ${contest}: ${zerodSenaNumbers.join(' ')}
+
+    Você acertou ${matchingNumbers.length} número${matchingNumbers.length > 1 ? 's' : ''}: ${zerodMatchingNumbers}
+    ${matchingNumbers.length >= 4 ? 'Um prêmio está disponível!' : ''}
     `);
 
     await browser.close();

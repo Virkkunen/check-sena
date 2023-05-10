@@ -1,7 +1,7 @@
 {
   "name": "check-sena",
-  "version": "1.0.1",
-  "description": "A package that checks the lottery numbers against the parameter ones",
+  "version": "1.1.0",
+  "description": "A package that checks the Mega Sena's numbers against yours.",
   "main": "checkSena.ts",
   "bin": {
     "check-sena": "./bin.js"
@@ -15,7 +15,10 @@
     "loteria",
     "lottery",
     "brazil",
-    "caixa"
+    "caixa",
+    "brasil",
+    "mega",
+    "sena"
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
