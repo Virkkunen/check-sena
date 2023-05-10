@@ -39,11 +39,12 @@ var _this = this;
 var puppeteer = require('puppeteer');
 var yargs = require('yargs/yargs');
 var hideBin = require('yargs/helpers').hideBin;
+var senaUrl = 'https://loterias.caixa.gov.br/Paginas/Mega-Sena.aspx';
 var argv = yargs(hideBin(process.argv))
-    .usage("Usage: npx check-sena -n '<numbers>'")
+    .usage("Usage: npx check-sena -n '<numeros>'")
     .option('numbers', {
     alias: 'n',
-    describe: 'The six numbers, comma separated',
+    describe: 'Os 6 números para comparar com o concurso',
     demandOption: false,
     type: 'string',
     coerce: function (numbers) {
@@ -51,11 +52,11 @@ var argv = yargs(hideBin(process.argv))
         var isValidRange = function (num) { return num >= 1 && num <= 60; }; // must return true
         var hasDuplicates = function (arr) { return new Set(arr).size !== arr.length; }; // must return false
         if (numberList.length !== 6)
-            throw new Error('Invalid number of elements. Please provide exacly 6 numbers.');
+            throw new Error('Número inválido de elementos. Por favor mande apenas 6 números.');
         if (!numberList.every(isValidRange))
-            throw new Error('Numbers must be between 1 and 60.');
+            throw new Error('Números precisam ser entre 1 e 60.');
         if (hasDuplicates(numberList))
-            throw new Error('Duplicate numbers found. Please provide 6 unique numbers.');
+            throw new Error('Números duplicados encontrados. Por favor mande 6 números únicos.');
         return numberList;
     },
 })
@@ -109,7 +110,7 @@ var scrapeUrl = function (url) { return __awaiter(_this, void 0, void 0, functio
                 zerodNumbers = numbers.map(function (num) { return num.toString().padStart(2, '0'); });
                 zerodSenaNumbers = senaNumbers_1.map(function (num) { return num.toString().padStart(2, '0'); });
                 zerodMatchingNumbers = matchingNumbers.map(function (num) { return num.toString().padStart(2, '0'); });
-                console.log("\n    Seus n\u00FAmeros: ".concat(zerodNumbers.join(' '), "\n    Mega Sena ").concat(contest, ": ").concat(zerodSenaNumbers.join(' '), "\n\n    Voc\u00EA acertou ").concat(matchingNumbers.length, " n\u00FAmero").concat(matchingNumbers.length > 1 ? 's' : '', ": ").concat(zerodMatchingNumbers, "\n    ").concat(matchingNumbers.length >= 4 ? 'Um prêmio está disponível!' : '', "\n    "));
+                console.log("\n    Seus n\u00FAmeros: ".concat(zerodNumbers.join(' '), "\n    Mega Sena ").concat(contest, ": ").concat(zerodSenaNumbers.join(' '), "\n\n    Voc\u00EA acertou ").concat(matchingNumbers.length, " n\u00FAmero").concat(matchingNumbers.length > 1 ? 's' : '', ": ").concat(zerodMatchingNumbers.join(' '), "\n    ").concat(matchingNumbers.length >= 4 ? 'Um prêmio está disponível!' : '', "\n\n    ").concat(senaUrl, "\n    "));
                 return [4 /*yield*/, browser.close()];
             case 10:
                 _a.sent();
@@ -122,4 +123,4 @@ var scrapeUrl = function (url) { return __awaiter(_this, void 0, void 0, functio
         }
     });
 }); };
-scrapeUrl('https://loterias.caixa.gov.br/Paginas/Mega-Sena.aspx');
+scrapeUrl(senaUrl);
