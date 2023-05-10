@@ -1,0 +1,26 @@
+{
+  "name": "check-sena",
+  "version": "1.0.0",
+  "description": "A package that checks the lottery numbers against the parameter ones",
+  "main": "bin.ts",
+  "bin": {
+    "gen-color-preview": "./bin.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": {
+    "name": "Fred Almeida",
+    "email": "vrkknn@vrkknn.net",
+    "url": "https://vrkknn.net"
+  },
+  "license": "GPL-3.0-or-later",
+  "dependencies": {
+    "puppeteer": "^20.1.2",
+    "typescript": "^5.0.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.1.1",
+    "@types/puppeteer": "^7.0.4"
+  }
+}
