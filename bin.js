@@ -36,42 +36,89 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 var _this = this;
-var puppeteer = require("puppeteer");
+var puppeteer = require('puppeteer');
+var yargs = require('yargs/yargs');
+var hideBin = require('yargs/helpers').hideBin;
+var argv = yargs(hideBin(process.argv))
+    .usage("Usage: npx check-sena -n '<numbers>'")
+    .option('numbers', {
+    alias: 'n',
+    describe: 'The six numbers, comma separated',
+    demandOption: false,
+    type: 'string',
+    coerce: function (numbers) {
+        var numberList = numbers.split(',').map(function (num) { return parseInt(num.trim()); });
+        var isValidRange = function (num) { return num >= 1 && num <= 60; }; // must return true
+        var hasDuplicates = function (arr) { return new Set(arr).size !== arr.length; }; // must return false
+        if (numberList.length !== 6)
+            throw new Error('Invalid number of elements. Please provide exacly 6 numbers.');
+        if (!numberList.every(isValidRange))
+            throw new Error('Numbers must be between 1 and 60.');
+        if (hasDuplicates(numberList))
+            throw new Error('Duplicate numbers found. Please provide 6 unique numbers.');
+        return numberList;
+    },
+})
+    .help('help')
+    .alias('help', 'h').argv;
 var scrapeUrl = function (url) { return __awaiter(_this, void 0, void 0, function () {
-    var browser, page, numbers, err_1;
+    var numbers, browser, page, senaNumbers_1, contest, matchingNumbers, zerodNumbers, zerodSenaNumbers, zerodMatchingNumbers, err_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                _a.trys.push([0, 7, , 8]);
-                return [4 /*yield*/, puppeteer.launch({ headless: 'new' })];
+                numbers = argv.numbers;
+                _a.label = 1;
             case 1:
+                _a.trys.push([1, 11, , 12]);
+                return [4 /*yield*/, puppeteer.launch({ headless: 'new' })];
+            case 2:
                 browser = _a.sent();
                 return [4 /*yield*/, browser.newPage()];
-            case 2:
+            case 3:
                 page = _a.sent();
                 return [4 /*yield*/, page.goto(url)];
-            case 3:
-                _a.sent();
-                return [4 /*yield*/, page.waitForSelector('#ulDezenas li')];
             case 4:
                 _a.sent();
+                return [4 /*yield*/, page.waitForSelector('#ulDezenas li')];
+            case 5:
+                _a.sent(); // this element needs to load 
                 return [4 /*yield*/, page.evaluate(function () {
                         var liElements = document.querySelectorAll('#ulDezenas li');
-                        var liNumbers = Array.from(liElements).map(function (li) { var _a; return (_a = li.textContent) === null || _a === void 0 ? void 0 : _a.trim(); });
+                        var liNumbers = Array.from(liElements).map(function (li) { return +li.textContent.trim(); });
                         return liNumbers;
                     })];
-            case 5:
-                numbers = _a.sent();
-                console.log(numbers);
-                return [4 /*yield*/, browser.close()];
             case 6:
-                _a.sent();
-                return [3 /*break*/, 8];
+                senaNumbers_1 = _a.sent();
+                return [4 /*yield*/, page.evaluate(function () {
+                        var h2Elements = Array.from(document.querySelectorAll('h2'));
+                        var resultadoEl = h2Elements.find(function (el) { return el.innerText.includes('Resultado'); });
+                        var spanEl = resultadoEl.querySelector('span.ng-binding');
+                        var text = spanEl.textContent;
+                        return text;
+                    })];
             case 7:
+                contest = _a.sent();
+                if (!!numbers) return [3 /*break*/, 9];
+                console.log("Mega Sena XXXX: ".concat(senaNumbers_1.join(' ')));
+                return [4 /*yield*/, browser.close()];
+            case 8:
+                _a.sent();
+                return [2 /*return*/];
+            case 9:
+                matchingNumbers = numbers.filter(function (num) { return senaNumbers_1.includes(num); });
+                zerodNumbers = numbers.map(function (num) { return num.toString().padStart(2, '0'); });
+                zerodSenaNumbers = senaNumbers_1.map(function (num) { return num.toString().padStart(2, '0'); });
+                zerodMatchingNumbers = matchingNumbers.map(function (num) { return num.toString().padStart(2, '0'); });
+                console.log("\n    Seus n\u00FAmeros: ".concat(zerodNumbers.join(' '), "\n    Mega Sena ").concat(contest, ": ").concat(zerodSenaNumbers.join(' '), "\n\n    Voc\u00EA acertou ").concat(matchingNumbers.length, " n\u00FAmero").concat(matchingNumbers.length > 1 ? 's' : '', ": ").concat(zerodMatchingNumbers, "\n    ").concat(matchingNumbers.length >= 4 ? 'Um prêmio está disponível!' : '', "\n    "));
+                return [4 /*yield*/, browser.close()];
+            case 10:
+                _a.sent();
+                return [3 /*break*/, 12];
+            case 11:
                 err_1 = _a.sent();
                 console.error(err_1);
-                return [3 /*break*/, 8];
-            case 8: return [2 /*return*/];
+                return [3 /*break*/, 12];
+            case 12: return [2 /*return*/];
         }
     });
 }); };
