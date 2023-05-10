@@ -82,7 +82,7 @@ var scrapeUrl = function (url) { return __awaiter(_this, void 0, void 0, functio
                 _a.sent();
                 return [4 /*yield*/, page.waitForSelector('#ulDezenas li')];
             case 5:
-                _a.sent(); // this element needs to load 
+                _a.sent(); // this element needs to load
                 return [4 /*yield*/, page.evaluate(function () {
                         var liElements = document.querySelectorAll('#ulDezenas li');
                         var liNumbers = Array.from(liElements).map(function (li) { return +li.textContent.trim(); });
@@ -109,8 +109,12 @@ var scrapeUrl = function (url) { return __awaiter(_this, void 0, void 0, functio
                 matchingNumbers = numbers.filter(function (num) { return senaNumbers_1.includes(num); });
                 zerodNumbers = numbers.map(function (num) { return num.toString().padStart(2, '0'); });
                 zerodSenaNumbers = senaNumbers_1.map(function (num) { return num.toString().padStart(2, '0'); });
-                zerodMatchingNumbers = matchingNumbers.map(function (num) { return num.toString().padStart(2, '0'); });
-                console.log("\n    Seus n\u00FAmeros: ".concat(zerodNumbers.join(' '), "\n    Mega Sena ").concat(contest, ": ").concat(zerodSenaNumbers.join(' '), "\n\n    Voc\u00EA acertou ").concat(matchingNumbers.length, " n\u00FAmero").concat(matchingNumbers.length > 1 ? 's' : '', ": ").concat(zerodMatchingNumbers.join(' '), "\n    ").concat(matchingNumbers.length >= 4 ? 'Um prêmio está disponível!' : '', "\n\n    ").concat(senaUrl, "\n    "));
+                zerodMatchingNumbers = matchingNumbers.map(function (num) {
+                    return num.toString().padStart(2, '0');
+                });
+                console.log("\n    Seus n\u00FAmeros: ".concat(zerodNumbers.join(' '), "\n    Mega Sena ").concat(contest, ": ").concat(zerodSenaNumbers.join(' '), "\n\n    ").concat(matchingNumbers.length
+                    ? "Voc\u00EA acertou ".concat(matchingNumbers.length, " n\u00FAmero").concat(matchingNumbers.length > 1 ? 's' : '', ": ").concat(zerodMatchingNumbers.join(' '))
+                    : 'Você não acertou nenhum número', "\n    ").concat(matchingNumbers.length >= 4 ? 'Um prêmio está disponível!' : '', "\n\n    ").concat(senaUrl, "\n    "));
                 return [4 /*yield*/, browser.close()];
             case 10:
                 _a.sent();

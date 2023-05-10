@@ -41,7 +41,7 @@ const scrapeUrl = async (url: string) => {
     const browser = await puppeteer.launch({ headless: 'new' });
     const page = await browser.newPage();
     await page.goto(url);
-    await page.waitForSelector('#ulDezenas li'); // this element needs to load 
+    await page.waitForSelector('#ulDezenas li'); // this element needs to load
 
     // get sena numbers
     const senaNumbers = await page.evaluate((): number[] => {
@@ -71,13 +71,21 @@ const scrapeUrl = async (url: string) => {
     // for display purposes
     const zerodNumbers = numbers.map((num: number) => num.toString().padStart(2, '0'));
     const zerodSenaNumbers = senaNumbers.map((num: number) => num.toString().padStart(2, '0'));
-    const zerodMatchingNumbers = matchingNumbers.map((num: number) => num.toString().padStart(2, '0'));
+    const zerodMatchingNumbers = matchingNumbers.map((num: number) =>
+      num.toString().padStart(2, '0')
+    );
 
     console.log(`
     Seus números: ${zerodNumbers.join(' ')}
     Mega Sena ${contest}: ${zerodSenaNumbers.join(' ')}
 
-    Você acertou ${matchingNumbers.length} número${matchingNumbers.length > 1 ? 's' : ''}: ${zerodMatchingNumbers.join(' ')}
+    ${
+      matchingNumbers.length
+        ? `Você acertou ${matchingNumbers.length} número${
+            matchingNumbers.length > 1 ? 's' : ''
+          }: ${zerodMatchingNumbers.join(' ')}`
+        : 'Você não acertou nenhum número'
+    }
     ${matchingNumbers.length >= 4 ? 'Um prêmio está disponível!' : ''}
 
     ${senaUrl}
