@@ -4,6 +4,8 @@ const puppeteer = require('puppeteer');
 const yargs = require('yargs/yargs');
 const { hideBin } = require('yargs/helpers');
 
+const senaUrl = 'https://loterias.caixa.gov.br/Paginas/Mega-Sena.aspx';
+
 const argv = yargs(hideBin(process.argv))
   .usage("Usage: npx check-sena -n '<numeros>'")
   .option('numbers', {
@@ -75,8 +77,10 @@ const scrapeUrl = async (url: string) => {
     Seus números: ${zerodNumbers.join(' ')}
     Mega Sena ${contest}: ${zerodSenaNumbers.join(' ')}
 
-    Você acertou ${matchingNumbers.length} número${matchingNumbers.length > 1 ? 's' : ''}: ${zerodMatchingNumbers}
+    Você acertou ${matchingNumbers.length} número${matchingNumbers.length > 1 ? 's' : ''}: ${zerodMatchingNumbers.join(' ')}
     ${matchingNumbers.length >= 4 ? 'Um prêmio está disponível!' : ''}
+
+    ${senaUrl}
     `);
 
     await browser.close();
@@ -85,4 +89,4 @@ const scrapeUrl = async (url: string) => {
   }
 };
 
-scrapeUrl('https://loterias.caixa.gov.br/Paginas/Mega-Sena.aspx');
+scrapeUrl(senaUrl);
