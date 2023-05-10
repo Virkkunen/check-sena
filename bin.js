@@ -39,7 +39,9 @@ var _this = this;
 var puppeteer = require('puppeteer');
 var yargs = require('yargs/yargs');
 var hideBin = require('yargs/helpers').hideBin;
+var chalk = require('chalk');
 var senaUrl = 'https://loterias.caixa.gov.br/Paginas/Mega-Sena.aspx';
+var log = console.log;
 var argv = yargs(hideBin(process.argv))
     .usage("Usage: npx check-sena -n '<numeros>'")
     .option('numbers', {
@@ -63,7 +65,7 @@ var argv = yargs(hideBin(process.argv))
     .help('help')
     .alias('help', 'h').argv;
 var scrapeUrl = function (url) { return __awaiter(_this, void 0, void 0, function () {
-    var numbers, browser, page, senaNumbers_1, contest, matchingNumbers, zerodNumbers, zerodSenaNumbers, zerodMatchingNumbers, err_1;
+    var numbers, browser, page, senaNumbers_1, contest, zerodSenaNumbers, senaNumsColor, matchingNumbers, zerodNumbers, zerodMatchingNumbers, matchingNumsColor, ownNumsColor, prizeColor, noNumsColor, linkColor, err_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -92,15 +94,21 @@ var scrapeUrl = function (url) { return __awaiter(_this, void 0, void 0, functio
                 senaNumbers_1 = _a.sent();
                 return [4 /*yield*/, page.evaluate(function () {
                         var h2Elements = Array.from(document.querySelectorAll('h2'));
-                        var resultadoEl = h2Elements.find(function (el) { return el.innerText.includes('Resultado'); });
+                        var resultadoEl = h2Elements.find(function (el) {
+                            return el.innerText.includes('Resultado');
+                        });
                         var spanEl = resultadoEl.querySelector('span.ng-binding');
                         var text = spanEl.textContent;
                         return text;
                     })];
             case 7:
                 contest = _a.sent();
+                zerodSenaNumbers = senaNumbers_1.map(function (num) {
+                    return num.toString().padStart(2, '0');
+                });
+                senaNumsColor = chalk.hex('#74c7ec');
                 if (!!numbers) return [3 /*break*/, 9];
-                console.log("Mega Sena XXXX: ".concat(senaNumbers_1.join(' ')));
+                log("\n      ".concat(chalk.bold("Mega Sena ".concat(contest, ":")), " ").concat(senaNumsColor(zerodSenaNumbers.join(' ')), "\n      "));
                 return [4 /*yield*/, browser.close()];
             case 8:
                 _a.sent();
@@ -108,13 +116,17 @@ var scrapeUrl = function (url) { return __awaiter(_this, void 0, void 0, functio
             case 9:
                 matchingNumbers = numbers.filter(function (num) { return senaNumbers_1.includes(num); });
                 zerodNumbers = numbers.map(function (num) { return num.toString().padStart(2, '0'); });
-                zerodSenaNumbers = senaNumbers_1.map(function (num) { return num.toString().padStart(2, '0'); });
                 zerodMatchingNumbers = matchingNumbers.map(function (num) {
                     return num.toString().padStart(2, '0');
                 });
-                console.log("\n    Seus n\u00FAmeros: ".concat(zerodNumbers.join(' '), "\n    Mega Sena ").concat(contest, ": ").concat(zerodSenaNumbers.join(' '), "\n\n    ").concat(matchingNumbers.length
-                    ? "Voc\u00EA acertou ".concat(matchingNumbers.length, " n\u00FAmero").concat(matchingNumbers.length > 1 ? 's' : '', ": ").concat(zerodMatchingNumbers.join(' '))
-                    : 'Você não acertou nenhum número', "\n    ").concat(matchingNumbers.length >= 4 ? 'Um prêmio está disponível!' : '', "\n\n    ").concat(senaUrl, "\n    "));
+                matchingNumsColor = matchingNumbers.length <= 3 ? chalk.hex('#89dceb') : chalk.bold.hex('#a6e3a1');
+                ownNumsColor = chalk.hex('#b4befe');
+                prizeColor = chalk.bold.hex('#40a02b');
+                noNumsColor = chalk.hex('#f38ba8');
+                linkColor = chalk.underline.hex('#89b4fa');
+                console.log("\n    ".concat(chalk.bold('Seus números: '), "\n    ").concat(ownNumsColor(zerodNumbers.join(' ')), "\n\n    ").concat(chalk.bold("Mega Sena ".concat(contest, ": ")), "\n    ").concat(senaNumsColor(zerodSenaNumbers.join(' ')), "\n\n\n    ").concat(matchingNumbers.length
+                    ? "Voc\u00EA acertou ".concat(matchingNumsColor(matchingNumbers.length), " n\u00FAmero").concat(matchingNumbers.length > 1 ? 's' : '', ": ").concat(matchingNumsColor(zerodMatchingNumbers.join(' ')))
+                    : "".concat(noNumsColor('Você não acertou nenhum número')), "\n    ").concat(matchingNumbers.length >= 4 ? "".concat(prizeColor('Um prêmio está disponível!')) : '', "\n\n    \n    ").concat(linkColor(senaUrl), "\n    "));
                 return [4 /*yield*/, browser.close()];
             case 10:
                 _a.sent();

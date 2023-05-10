@@ -3,8 +3,10 @@
 const puppeteer = require('puppeteer');
 const yargs = require('yargs/yargs');
 const { hideBin } = require('yargs/helpers');
+const chalk = require('chalk');
 
 const senaUrl = 'https://loterias.caixa.gov.br/Paginas/Mega-Sena.aspx';
+const log = console.log;
 
 const argv = yargs(hideBin(process.argv))
   .usage("Usage: npx check-sena -n '<numeros>'")
@@ -13,7 +15,7 @@ const argv = yargs(hideBin(process.argv))
     describe: 'Os 6 números para comparar com o concurso',
     demandOption: false,
     type: 'string',
-    coerce: (numbers: string) => {
+    coerce: (numbers: string): number[] => {
       const numberList = numbers.split(',').map((num) => parseInt(num.trim()));
 
       const isValidRange = (num: number) => num >= 1 && num <= 60; // must return true
@@ -33,7 +35,7 @@ const argv = yargs(hideBin(process.argv))
   .help('help')
   .alias('help', 'h').argv;
 
-const scrapeUrl = async (url: string) => {
+const scrapeUrl = async (url: string): Promise<void> => {
   const { numbers } = argv;
 
   try {
@@ -45,50 +47,71 @@ const scrapeUrl = async (url: string) => {
 
     // get sena numbers
     const senaNumbers = await page.evaluate((): number[] => {
-      const liElements = document.querySelectorAll('#ulDezenas li');
-      const liNumbers = Array.from(liElements).map((li) => +li.textContent!.trim());
+      const liElements: NodeListOf<Element> = document.querySelectorAll('#ulDezenas li');
+      const liNumbers: number[] = Array.from(liElements).map((li) => +li.textContent!.trim());
       return liNumbers;
     });
 
     // get contest number
     // there must be an easier and simpler way
-    const contest = await page.evaluate(() => {
-      const h2Elements = Array.from(document.querySelectorAll('h2'));
-      const resultadoEl = h2Elements.find((el) => el.innerText.includes('Resultado'));
-      const spanEl = resultadoEl!.querySelector('span.ng-binding');
-      const text = spanEl!.textContent;
+    const contest = await page.evaluate((): string | null => {
+      const h2Elements: HTMLHeadingElement[] = Array.from(document.querySelectorAll('h2'));
+      const resultadoEl: HTMLHeadingElement | undefined = h2Elements.find((el) =>
+        el.innerText.includes('Resultado')
+      );
+      const spanEl: HTMLHeadingElement | null = resultadoEl!.querySelector('span.ng-binding');
+      const text: string | null = spanEl!.textContent;
       return text;
     });
 
+    const zerodSenaNumbers: string[] = senaNumbers.map((num: number) =>
+      num.toString().padStart(2, '0')
+    );
+
+    const senaNumsColor = chalk.hex('#74c7ec');
+
     if (!numbers) {
-      console.log(`Mega Sena XXXX: ${senaNumbers.join(' ')}`);
+      log(`
+      ${chalk.bold(`Mega Sena ${contest}:`)} ${senaNumsColor(zerodSenaNumbers.join(' '))}
+      `);
       await browser.close();
       return;
     }
 
-    const matchingNumbers = numbers.filter((num: number) => senaNumbers.includes(num));
+    const matchingNumbers: number[] = numbers.filter((num: number) => senaNumbers.includes(num));
 
     // for display purposes
-    const zerodNumbers = numbers.map((num: number) => num.toString().padStart(2, '0'));
-    const zerodSenaNumbers = senaNumbers.map((num: number) => num.toString().padStart(2, '0'));
-    const zerodMatchingNumbers = matchingNumbers.map((num: number) =>
+    const zerodNumbers: string[] = numbers.map((num: number) => num.toString().padStart(2, '0'));
+    const zerodMatchingNumbers: string[] = matchingNumbers.map((num: number) =>
       num.toString().padStart(2, '0')
     );
 
+    const matchingNumsColor =
+      matchingNumbers.length <= 3 ? chalk.hex('#89dceb') : chalk.bold.hex('#a6e3a1');
+    const ownNumsColor = chalk.hex('#b4befe');
+    const prizeColor = chalk.bold.hex('#40a02b');
+    const noNumsColor = chalk.hex('#f38ba8');
+    const linkColor = chalk.underline.hex('#89b4fa');
+
     console.log(`
-    Seus números: ${zerodNumbers.join(' ')}
-    Mega Sena ${contest}: ${zerodSenaNumbers.join(' ')}
+    ${chalk.bold('Seus números: ')}
+    ${ownNumsColor(zerodNumbers.join(' '))}
+
+    ${chalk.bold(`Mega Sena ${contest}: `)}
+    ${senaNumsColor(zerodSenaNumbers.join(' '))}
+
 
     ${
       matchingNumbers.length
-        ? `Você acertou ${matchingNumbers.length} número${
+        ? `Você acertou ${matchingNumsColor(matchingNumbers.length)} número${
             matchingNumbers.length > 1 ? 's' : ''
-          }: ${zerodMatchingNumbers.join(' ')}`
-        : 'Você não acertou nenhum número'
+          }: ${matchingNumsColor(zerodMatchingNumbers.join(' '))}`
+        : `${noNumsColor('Você não acertou nenhum número')}`
     }
-    ${matchingNumbers.length >= 4 ? 'Um prêmio está disponível!' : ''}
+    ${matchingNumbers.length >= 4 ? `${prizeColor('Um prêmio está disponível!')}` : ''}
 
-    ${senaUrl}
+    
+    ${linkColor(senaUrl)}
     `);
 
     await browser.close();

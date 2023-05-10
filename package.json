@@ -1,6 +1,6 @@
 {
   "name": "check-sena",
-  "version": "1.1.4",
+  "version": "1.2.2",
   "description": "A package that checks the Mega Sena's numbers against yours.",
   "main": "checkSena.ts",
   "bin": {
@@ -36,7 +36,7 @@
   },
   "homepage": "https://github.com/Virkkunen/check-sena#readme",
   "dependencies": {
-    "chalk": "^5.2.0",
+    "chalk": "^4.1.2",
     "puppeteer": "^20.1.2",
     "typescript": "^5.0.4",
     "yargs": "^17.7.2"
