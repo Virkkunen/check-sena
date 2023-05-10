@@ -42,9 +42,9 @@ const scrapeUrl = async (url: string) => {
     await page.waitForSelector('#ulDezenas li'); // this element needs to load 
 
     // get sena numbers
-    const senaNumbers = await page.evaluate(() => {
+    const senaNumbers = await page.evaluate((): number[] => {
       const liElements = document.querySelectorAll('#ulDezenas li');
-      const liNumbers = Array.from(liElements).map((li) => li.textContent?.trim());
+      const liNumbers = Array.from(liElements).map((li) => +li.textContent!.trim());
       return liNumbers;
     });
 
@@ -66,10 +66,11 @@ const scrapeUrl = async (url: string) => {
 
     // for display purposes
     const zerodNumbers = numbers.map((num: number) => num.toString().padStart(2, '0'));
+    const zerodSenaNumbers = senaNumbers.map((num: number) => num.toString().padStart(2, '0'));
 
     console.log(`
     Seus números: ${zerodNumbers.join(' ')}
-    Mega Sena ${contest}: ${senaNumbers.join(' ')}
+    Mega Sena ${contest}: ${zerodSenaNumbers.join(' ')}
     `);
 
     await browser.close();
