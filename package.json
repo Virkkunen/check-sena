@@ -2,12 +2,25 @@
   "name": "check-sena",
   "version": "1.0.0",
   "description": "A package that checks the lottery numbers against the parameter ones",
-  "main": "bin.ts",
+  "main": "checkSena.ts",
   "bin": {
-    "gen-color-preview": "./bin.js"
+    "check-sena": "./bin.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Virkkunen/check-sena.git"
+  },
+  "keywords": [
+    "mega sena",
+    "loteria",
+    "lottery",
+    "brazil",
+    "caixa"
+  ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "npx ts-node checkSena.ts",
+    "compile": "tsc checkSena.ts --outFile bin.js"
   },
   "author": {
     "name": "Fred Almeida",
@@ -15,6 +28,10 @@
     "url": "https://vrkknn.net"
   },
   "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/Virkkunen/check-sena/issues"
+  },
+  "homepage": "https://github.com/Virkkunen/check-sena#readme",
   "dependencies": {
     "puppeteer": "^20.1.2",
     "typescript": "^5.0.4"
