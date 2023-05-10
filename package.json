@@ -34,10 +34,12 @@
   "homepage": "https://github.com/Virkkunen/check-sena#readme",
   "dependencies": {
     "puppeteer": "^20.1.2",
-    "typescript": "^5.0.4"
+    "typescript": "^5.0.4",
+    "yargs": "^17.7.2"
   },
   "devDependencies": {
     "@types/node": "^20.1.1",
-    "@types/puppeteer": "^7.0.4"
+    "@types/puppeteer": "^7.0.4",
+    "@types/yargs": "^17.0.24"
   }
 }
