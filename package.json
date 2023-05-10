@@ -36,6 +36,7 @@
   },
   "homepage": "https://github.com/Virkkunen/check-sena#readme",
   "dependencies": {
+    "chalk": "^5.2.0",
     "puppeteer": "^20.1.2",
     "typescript": "^5.0.4",
     "yargs": "^17.7.2"
