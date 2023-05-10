@@ -5,10 +5,10 @@ const yargs = require('yargs/yargs');
 const { hideBin } = require('yargs/helpers');
 
 const argv = yargs(hideBin(process.argv))
-  .usage("Usage: npx check-sena -n '<numbers>'")
+  .usage("Usage: npx check-sena -n '<numeros>'")
   .option('numbers', {
     alias: 'n',
-    describe: 'The six numbers, comma separated',
+    describe: 'Os 6 números para comparar com o concurso',
     demandOption: false,
     type: 'string',
     coerce: (numbers: string) => {
@@ -18,12 +18,12 @@ const argv = yargs(hideBin(process.argv))
       const hasDuplicates = (arr: number[]) => new Set(arr).size !== arr.length; // must return false
 
       if (numberList.length !== 6)
-        throw new Error('Invalid number of elements. Please provide exacly 6 numbers.');
+        throw new Error('Número inválido de elementos. Por favor mande apenas 6 números.');
 
-      if (!numberList.every(isValidRange)) throw new Error('Numbers must be between 1 and 60.');
+      if (!numberList.every(isValidRange)) throw new Error('Números precisam ser entre 1 e 60.');
 
       if (hasDuplicates(numberList))
-        throw new Error('Duplicate numbers found. Please provide 6 unique numbers.');
+        throw new Error('Números duplicados encontrados. Por favor mande 6 números únicos.');
 
       return numberList;
     },
